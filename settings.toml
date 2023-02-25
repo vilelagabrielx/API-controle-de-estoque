@@ -1,0 +1,21 @@
+[default]
+DEBUG = false
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://gabrielvilela:93216430@129.148.45.165/API_ESTOQUE'
+TITLE = "estoque"
+JWT_SECRET_KEY ='super-secret-key'
+JWT_TOKEN_LOCATION = ['headers']
+JWT_HEADER_TYPE = 'Bearer'
+JWT_USER_CLAIMS = 'user'
+PASSWORD_SCHEMES = ['pbkdf2_sha512', 'md5_crypt']
+EXTENSIONS = [
+    "estoque.ext.database:init_app",
+    "estoque.ext.auth:init_app",
+    "estoque.blueprints.restapi:init_app",
+]
+
+[development]
+EXTENSIONS = [
+    "dynaconf_merge_unique"  # to reuse extensions list from [default]
+]
+TEMPLATES_AUTO_RELOAD = true
+
