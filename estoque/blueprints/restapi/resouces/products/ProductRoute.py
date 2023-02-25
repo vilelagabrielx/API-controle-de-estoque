@@ -1,17 +1,14 @@
 from flask import jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager, jwt_required, verify_jwt_in_request, get_jwt_identity
-from ...resouces.products.ProductResource import ProductItemResource, ProductResource, ProductPutItemResouce, ProductDeleteItemResouce
+from ...resouces.products.ProductResource import ProductItemResource, ProductResource, ProductPutItemResouce
 
 
 def add_product_routes(bp, api, app):
     jwt = JWTManager(app)
 
-    # @app.errorhandler(Exception)
-    # def handle_errors(e):
-    #     return jsonify({"error": "Internal Server Error"}), 404
-
     # Define a função de proteção de rota dentro do Blueprint
+
     @jwt_required
     @bp.route('/product/')
     def protected_view():
@@ -43,5 +40,5 @@ def add_product_routes(bp, api, app):
     def protected_product_item_delete(product_id):
         '''Verifica o token passado na rota de um produto específico.'''
         verify_jwt_in_request()
-        product = ProductDeleteItemResouce()
+        product = ProductItemResource()
         return product.delete(product_id)

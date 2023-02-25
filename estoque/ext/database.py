@@ -4,4 +4,5 @@ db = SQLAlchemy()
 
 
 def init_app(app: Flask) -> Flask:
+    '''Inicia o SQLAlchemy como ORM.'''
     db.init_app(app)

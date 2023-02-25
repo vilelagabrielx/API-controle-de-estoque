@@ -5,7 +5,7 @@ from flask import Flask
 
 
 def load_extensions(app: Flask) -> Flask:
-    '''Carrega as extensões definidas no settings.toml e importa elas'''
+    '''Carrega as extensões definidas no settings.toml e importa elas.'''
     # Itera sobre todas as extensões definidas na configuração da aplicação.
     for extension in app.config.EXTENSIONS:
         # Divide a string da extensão em duas partes, separadas pelo caractere ':'.
@@ -33,5 +33,5 @@ def load_extensions(app: Flask) -> Flask:
 
 def init_app(app: Flask, **config) -> Flask:
     '''Manda o app para a classe de configurações. As configurações são feitas
-    no arquivo settings.toml'''
+    no arquivo settings.toml.'''
     FlaskDynaconf(app, **config)

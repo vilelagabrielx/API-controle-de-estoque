@@ -7,7 +7,7 @@ from flask_restful import Resource
 from ...httpMessages.httpError import httpError
 from estoque.ext.database import db
 from datetime import datetime
-from enum import Enum
+from .....types.types import TipoMovimentacao
 import pytz
 timezone = pytz.timezone('America/Sao_Paulo')
 
@@ -84,12 +84,6 @@ class StockMovementsByProductID(Resource):
 #         return httpSuccess('Product deleted successfully')
 
 
-class TipoMovimentacao(Enum):
-    '''Enum que define o tipo de movimenção como entrada e saída.'''
-    ENTRADA = "entrada"
-    SAIDA = "saida"
-
-
 class StockMovementsPutItem(Resource):
     '''Classe de insert do banco de dados de um movimento de estoque.'''
 
@@ -128,7 +122,7 @@ class StockMovementsPutItem(Resource):
         if tipo == TipoMovimentacao.ENTRADA:
             new_quantity = quantidade + product.quantidade
         else:  # tipo == TipoMovimentacao.SAIDA
-            new_quantity = quantidade - product.quantidade
+            new_quantity = product.quantidade - quantidade
             if new_quantity < 0:
                 return httpError('Not enough products', 404)
 

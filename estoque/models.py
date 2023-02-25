@@ -5,9 +5,16 @@ from sqlalchemy_serializer import SerializerMixin
 timezone = pytz.timezone('America/Sao_Paulo')
 
 
+class ProductTypes(db.Model, SerializerMixin):
+    __tablename__ = 'tipoProduto'
+    '''Modelo da tabela user, tabela onde os logins são armazenados.'''
+    ID = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(500))
+
+
 class Product(db.Model, SerializerMixin):
     __tablename__ = 'product'
-    '''Modelo da tabela product, tabela apenas de teste.'''
+    '''Modelo da tabela product, para os produtos do estoque.'''
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(140))
     quantidade = db.Column(db.Numeric())
@@ -15,6 +22,7 @@ class Product(db.Model, SerializerMixin):
     create_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     created_at = db.Column(db.DateTime, default=datetime.now(timezone))
     updated_at = db.Column(db.DateTime, default=datetime.now(timezone))
+    idtipo = db.Column(db.Integer, db.ForeignKey('tipoProduto.ID'))
 
 
 class User(db.Model, SerializerMixin):
@@ -27,7 +35,7 @@ class User(db.Model, SerializerMixin):
 
 class StockMovements(db.Model, SerializerMixin):
     __tablename__ = 'StockMovements'
-    '''Modelo da tabela user, tabela onde os logins são armazenados.'''
+    '''Modelo da tabela StockMovements, tabela onde as movimentações de estoque são armazenadas.'''
     id = db.Column(db.Integer, primary_key=True)
     tipo = db.Column(db.Enum('entrada', 'saida'))
     quantidade = db.Column(db.Numeric())

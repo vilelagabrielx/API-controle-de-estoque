@@ -2,7 +2,7 @@ from flask import jsonify, request
 from estoque.blueprints.restapi.httpMessages.httpSucess import httpSuccess
 from estoque.blueprints.restapi.httpMessages.httpError import httpError
 from estoque.blueprints.restapi.requests.requestChecker import requestChecker
-from estoque.models import Product
+from estoque.models import Product, ProductTypes
 from flask_restful import Resource
 from ...httpMessages.httpError import httpError
 from estoque.ext.database import db
@@ -30,8 +30,6 @@ class ProductItemResource(Resource):
         else:
             return httpError("Product does not exist", 404)
 
-
-class ProductDeleteItemResouce(Resource):
     def delete(self, product_id):
         product = Product.query.filter_by(id=product_id).first()
         if not product:
@@ -45,22 +43,30 @@ class ProductPutItemResouce(Resource):
     def put(self, user_id):
         data = request.get_json() or {}
 
-        check = requestChecker(data, ["nome", "quantidade", "preco"])
+        check = requestChecker(
+            data, ["nome", "quantidade", "preco", "tipoProduto"])
 
         if check != True:
             return check
         nome = request.json.get("nome")
         quantidade = request.json.get("quantidade")
         preco = request.json.get("preco")
+        tipo_produto = request.json.get("tipoProduto")
         product = Product.query.filter_by(nome=nome).first()
         if product:
             return httpError('The database already has a product registered with this name')
+
+        tipoProduto = ProductTypes.query.filter_by(nome=tipo_produto).first()
+
+        if not tipoProduto:
+            return httpError('Product type does not exist')
 
         new_product = Product(
             nome=nome,
             quantidade=quantidade,
             preco=preco,
-            create_user=int(user_id)
+            create_user=int(user_id),
+            idtipo=tipoProduto.ID
         )
         db.session.add(new_product)
         db.session.commit()
