@@ -44,3 +44,11 @@ class StockMovements(db.Model, SerializerMixin):
     produto_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     quantidade_antiga_produtos = db.Column(db.Numeric())
     quantidade_atual_produtos = db.Column(db.Numeric())
+
+
+class UserPermission(db.Model, SerializerMixin):
+    __tablename__ = 'user_permission'
+    '''Modelo da tabela StockMovements, tabela onde as movimentações de estoque são armazenadas.'''
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True)
+    permission = db.Column(db.String(512))

@@ -40,13 +40,15 @@ def add_product_type_routes(bp, api, app):
     def protected_product_type_item_delete(producttype_id):
         '''Verifica o token passado na rota de um produto específico.'''
         verify_jwt_in_request()
+        user_id = get_jwt_identity()
         product = ProductTypeItemResource()
-        return product.delete(producttype_id)
+        return product.delete(producttype_id, user_id)
 
     @jwt_required
     @bp.route('/producttype/<producttype_id>', methods=['PUT'])
     def protected_product_type_item_update(producttype_id):
         '''Verifica o token passado na rota de um tipo de produto específico.'''
         verify_jwt_in_request()
+        user_id = get_jwt_identity()
         product = ProductTypeItemResource()
-        return product.put(producttype_id)
+        return product.put(producttype_id, user_id)
