@@ -85,6 +85,16 @@ class ProductTypeItemResource(Resource):
 
 class ProducttypeCREATEItemResouce(Resource):
     def post(self, user_id):
+
+        user_permission = UserPermission.query.filter_by(
+            user_id=user_id).first()
+
+        if not user_permission:
+            return httpError("You have no permissions", 403)
+
+        if user_permission.permission not in ['create_user_type', 'administrador']:
+            return httpError("You don't have permission to create a product type", 403)
+
         data = request.get_json() or {}
 
         check = requestChecker(
