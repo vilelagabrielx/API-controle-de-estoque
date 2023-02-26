@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager, jwt_required, verify_jwt_in_request, get_jwt_identity
-from ...resouces.products.ProductResource import ProductItemResource, ProductResource, ProductPutItemResouce
+from ...resouces.products.ProductResource import ProductItemResource, ProductResource, ProductCREATEItemResouce
 
 
 def add_product_routes(bp, api, app):
@@ -10,7 +10,7 @@ def add_product_routes(bp, api, app):
     # Define a função de proteção de rota dentro do Blueprint
 
     @jwt_required
-    @bp.route('/product/')
+    @bp.route('/product/', methods=['GET'])
     def protected_view():
         '''Verifica o token passado na rota de produtos.'''
         verify_jwt_in_request()
@@ -18,7 +18,7 @@ def add_product_routes(bp, api, app):
         return products.get()
 
     @jwt_required
-    @bp.route('/product/<product_id>')
+    @bp.route('/product/<product_id>', methods=['GET'])
     def protected_product_item_view(product_id):
         '''Verifica o token passado na rota de um produto específico.'''
         verify_jwt_in_request()
@@ -26,13 +26,13 @@ def add_product_routes(bp, api, app):
         return product.get(product_id)
 
     @jwt_required
-    @bp.route('/product/', methods=['PUT'])
-    def protected_product_item_put():
+    @bp.route('/product/', methods=['POST'])
+    def protected_product_item_crete():
         '''Verifica o token passado na rota de um produto específico.'''
 
         verify_jwt_in_request()
         user_id = get_jwt_identity()
-        product = ProductPutItemResouce()
+        product = ProductCREATEItemResouce()
         return product.put(user_id)
 
     @jwt_required

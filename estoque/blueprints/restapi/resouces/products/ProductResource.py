@@ -39,8 +39,8 @@ class ProductItemResource(Resource):
         return httpSuccess('Product deleted successfully')
 
 
-class ProductPutItemResouce(Resource):
-    def put(self, user_id):
+class ProductCREATEItemResouce(Resource):
+    def post(self, user_id):
         data = request.get_json() or {}
 
         check = requestChecker(

@@ -42,10 +42,10 @@ class LoginCheckResource(Resource):
         return {"access_token": access_token}, 200
 
 
-class LoginPutResource(Resource):
+class LoginCreateResource(Resource):
     '''Classe de operações com o model login para criação de um.'''
 
-    def put(self):
+    def post(self):
         '''verifica senha e retorna o token de acesso.'''
         data = request.get_json() or {}
 
