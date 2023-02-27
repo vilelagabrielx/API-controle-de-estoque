@@ -16,9 +16,9 @@ def init_app(app: Flask):
     add_stock_routes(bp, api, app)
     add_product_type_routes(bp, api, app)
 
-    @app.errorhandler(Exception)
-    def handle_errors(e):
-        return jsonify({"error": "Internal Server Error"}), 404
+    # @app.errorhandler(Exception)
+    # def handle_errors(e):
+    #     return jsonify({"error": "Internal Server Error"}), 404
 
     # Registra o blueprint
     app.register_blueprint(bp)

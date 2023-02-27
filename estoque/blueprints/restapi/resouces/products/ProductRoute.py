@@ -33,7 +33,7 @@ def add_product_routes(bp, api, app):
         verify_jwt_in_request()
         user_id = get_jwt_identity()
         product = ProductCREATEItemResouce()
-        return product.put(user_id)
+        return product.post(user_id)
 
     @jwt_required
     @bp.route('/product/<product_id>', methods=['DELETE'])

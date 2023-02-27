@@ -69,12 +69,15 @@ class ProductTypeItemResource(Resource):
 
         data = request.get_json() or {}
 
+        if not data:
+            return httpError('Bad Request Error')
+
         check = requestChecker(
             data, ["nome"])
 
         if check != True:
             return check
-        nome = request.json.get("nome")
+        nome = data.get('nome')
 
         productstypes.nome = nome
 
@@ -92,24 +95,33 @@ class ProducttypeCREATEItemResouce(Resource):
         if not user_permission:
             return httpError("You have no permissions", 403)
 
-        if user_permission.permission not in ['create_user_type', 'administrador']:
+        if user_permission.permission not in ['create_product_type', 'administrador']:
             return httpError("You don't have permission to create a product type", 403)
 
         data = request.get_json() or {}
+
+        if not data:
+            return httpError('Bad Request Error')
 
         check = requestChecker(
             data, ["nome"])
 
         if check != True:
             return check
-        nome = request.json.get("nome")
+
+        nome = data.get('nome')
+
         product = ProductTypes.query.filter_by(nome=nome).first()
+
         if product:
             return httpError('The database already has a product type registered with this name')
 
         new_producttype = ProductTypes(
             nome=nome
         )
+
         db.session.add(new_producttype)
+
         db.session.commit()
+
         return httpSuccess('Product type created successfully')

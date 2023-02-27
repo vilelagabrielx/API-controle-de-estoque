@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import jsonify, request, Response
 from estoque.blueprints.restapi.httpMessages.httpSucess import httpSuccess
 from estoque.blueprints.restapi.httpMessages.httpError import httpError
 from estoque.blueprints.restapi.requests.requestChecker import requestChecker
@@ -11,7 +11,7 @@ from estoque.ext.database import db
 class ProductResource(Resource):
     '''Classe de operações com o model produto para todos os produtos.'''
 
-    def get(self):
+    def get(self) -> Response:
         '''Retorna todos os produtos'''
         products = Product.query.all()
         return jsonify(
@@ -22,7 +22,7 @@ class ProductResource(Resource):
 class ProductItemResource(Resource):
     '''Classe de operações com o model produto para um produto específico.'''
 
-    def get(self, product_id):
+    def get(self, product_id) -> Response:
         '''Retorna um produto específico'''
         product = Product.query.filter_by(id=product_id).first()
         if product:
@@ -30,7 +30,7 @@ class ProductItemResource(Resource):
         else:
             return httpError("Product does not exist", 404)
 
-    def delete(self, product_id):
+    def delete(self, product_id) -> Response:
         product = Product.query.filter_by(id=product_id).first()
         if not product:
             return httpError('Product does not exist', 404)
@@ -40,19 +40,28 @@ class ProductItemResource(Resource):
 
 
 class ProductCREATEItemResouce(Resource):
-    def post(self, user_id):
+    def post(self, user_id) -> Response:
         data = request.get_json() or {}
+
+        if not data:
+            return httpError('Bad Request Error')
 
         check = requestChecker(
             data, ["nome", "quantidade", "preco", "tipoProduto"])
 
         if check != True:
             return check
-        nome = request.json.get("nome")
-        quantidade = request.json.get("quantidade")
-        preco = request.json.get("preco")
-        tipo_produto = request.json.get("tipoProduto")
+
+        nome = data.get('nome')
+
+        quantidade = data.get('quantidade')
+
+        preco = data.get('preco')
+
+        tipo_produto = data.get('tipoProduto')
+
         product = Product.query.filter_by(nome=nome).first()
+
         if product:
             return httpError('The database already has a product registered with this name')
 

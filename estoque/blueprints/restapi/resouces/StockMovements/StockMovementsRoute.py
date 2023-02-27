@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager, jwt_required, verify_jwt_in_request, get_jwt_identity
-from ..StockMovements.StockMovementsResource import StockMovementsResource, StockMovementsByID, StockMovementsByProductID, StockMovementsByUserID, StockMovementsPutItem
+from ..StockMovements.StockMovementsResource import StockMovementsResource, StockMovementsPutItem
 
 
 def add_stock_routes(bp, api, app):
@@ -26,7 +26,7 @@ def add_stock_routes(bp, api, app):
     #     return product.get(product_id)
 
     @jwt_required
-    @bp.route('/stockmovements/', methods=['PUT'])
+    @bp.route('/stockmovements/', methods=['POST'])
     def protected_stockMovement_item_put():
         '''Verifica o token passado na rota de inserção de um stockmovements.'''
 

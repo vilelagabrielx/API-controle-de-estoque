@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import jsonify, request, Response
 from estoque.blueprints.restapi.httpMessages.httpSucess import httpSuccess
 from estoque.blueprints.restapi.httpMessages.httpError import httpError
 from estoque.blueprints.restapi.requests.requestChecker import requestChecker
@@ -30,11 +30,12 @@ class StockMovementsResource(Resource):
 class StockMovementsByID(Resource):
     '''Classe de operações com o model de movimentação de estoque para um id de operação específico.'''
 
-    def get(self, stock_id):
+    def get(self, stock_id) -> Response:
         '''Retorna um movimento de estoque específico'''
-        StockMovements = StockMovements.query.filter_by(id=stock_id).first()
-        if StockMovements:
-            return jsonify(StockMovements.to_dict())
+        stockMovements = StockMovements.query.filter_by(
+            id=stock_id).first()
+        if stockMovements:
+            return jsonify(stockMovements.to_dict())
         else:
             return httpError("There's no a Stock Movement with this id", 404)
 
@@ -42,36 +43,36 @@ class StockMovementsByID(Resource):
 class StockMovementsByUserID(Resource):
     '''Classe de operações com o model de movimento de estoque de um usuário específico.'''
 
-    def get(self, user_id):
+    def get(self, user_id) -> Response:
         '''Retorna um movimento de estoque de um usuário específico.'''
         user_database = User.query.filter_by(id=user_id).first()
 
         if not user_database:
             return httpError("User Does not Exist", 404)
 
-        StockMovements = StockMovements.query.filter_by(
+        stockMovements = StockMovements.query.filter_by(
             usuario_id=user_id).all()
 
         return jsonify(
-            {"stock movements": [item.to_dict() for item in StockMovements]}
+            {"stock movements": [item.to_dict() for item in stockMovements]}
         )
 
 
 class StockMovementsByProductID(Resource):
     '''Classe de operações com o model de movimento de estoque de um produto específico.'''
 
-    def get(self, product_id):
+    def get(self, product_id) -> Response:
         '''Retorna um movimento de estoque de um produto específico.'''
         product_database = User.query.filter_by(produto_id=product_id).first()
 
         if not product_database:
             return httpError('Product does not exist', 404)
 
-        StockMovements = StockMovements.query.filter_by(
+        stockMovements = StockMovements.query.filter_by(
             produto_id=product_id).all()
 
         return jsonify(
-            {"stock movements": [item.to_dict() for item in StockMovements]}
+            {"stock movements": [item.to_dict() for item in stockMovements]}
         )
 
 # class ProductDeleteItemResouce(Resource):
@@ -91,6 +92,9 @@ class StockMovementsPutItem(Resource):
         '''Insere um movimento de estoque.'''
         data = request.get_json() or {}
 
+        if not data:
+            return httpError('Bad Request Error')
+
         # Verificar se a solicitação tem os campos obrigatórios e seus tipos estão corretos.
         required_keys = ["tipo", "quantidade", "produto_id"]
         required_types = {
@@ -99,18 +103,23 @@ class StockMovementsPutItem(Resource):
             "produto_id": int
         }
         check = requestChecker(data, required_keys, required_types)
+
         if check != True:
             return check
 
+        tipo = data.get('tipo')
+
+        quantidade = data.get('quantidade')
+
+        produto_id = data.get('produto_id')
+
         try:
-            tipo = TipoMovimentacao(request.json["tipo"])
+            tipo = TipoMovimentacao(tipo)
         except:
             return httpError(
                 f"Invalid request. 'tipo' must be 'entrada' or 'saida'.", 400)
 
-        quantidade = request.json["quantidade"]
-
-        produto_id = request.json["produto_id"]
+        quantidade = quantidade
 
         # Verificar se o produto existe
         product = Product.query.filter_by(id=produto_id).first()
@@ -121,6 +130,7 @@ class StockMovementsPutItem(Resource):
         # Calcular a nova quantidade do produto
         if tipo == TipoMovimentacao.ENTRADA:
             new_quantity = quantidade + product.quantidade
+
         else:  # tipo == TipoMovimentacao.SAIDA
             new_quantity = product.quantidade - quantidade
             if new_quantity < 0:
@@ -134,12 +144,15 @@ class StockMovementsPutItem(Resource):
             quantidade_antiga_produtos=product.quantidade,
             quantidade_atual_produtos=new_quantity
         )
+
         product.quantidade = new_quantity
+
         product.updated_at = datetime.now(timezone)
 
         # Registrar a nova movimentação de estoque no banco de dados
 
         db.session.add(new_StockMovement)
+
         db.session.commit()
 
         # Retornar uma resposta de sucesso

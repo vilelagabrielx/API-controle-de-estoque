@@ -7,9 +7,13 @@ from ...resouces.login.LoginResource import LoginCheckResource, LoginCreateResou
 def add_login_routes(bp, api, app):
     jwt = JWTManager(app)
 
-    # @app.errorhandler(Exception)
-    # def handle_errors(e):
-    #     return jsonify({"error": "Internal Server Error"}), 404
-
+    @jwt_required
+    @bp.route('/login/permission/<user_change>', methods=['PATCH'])
+    def protected_update_permissions_user(user_change):
+        '''Verifica o token passado na rota de um tipo de produto específico.'''
+        verify_jwt_in_request()
+        user_id = get_jwt_identity()
+        permission = LoginCheckResource()
+        return permission.patch(user_change, user_id)
     api.add_resource(LoginCheckResource, "/login", methods=['POST'])
     api.add_resource(LoginCreateResource, "/login/create", methods=['POST'])
